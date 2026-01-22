@@ -54,7 +54,7 @@
 
 | Home Page | Trending & Latest |
 |:---:|:---:|
-| *(Add screenshot here)* | *(Add screenshot here)* |
+| ![Home Page](./screenshots/home-page.png) | ![Trending & Latest](./screenshots/trending-latest.png) |
 
 ## 🤝 Contributing
 

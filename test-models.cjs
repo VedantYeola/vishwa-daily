@@ -1,7 +1,30 @@
 
+const fs = require('fs');
+const path = require('path');
 const https = require('https');
 
-const API_KEY = process.env.VITE_GEMINI_API_KEY || 'AIzaSyD3GcHeUK7aZiFttMeRZ_LX7kOBvhjQ1f8';
+function getApiKey() {
+    if (process.env.VITE_GEMINI_API_KEY) return process.env.VITE_GEMINI_API_KEY;
+    try {
+        const envPath = path.resolve(__dirname, '.env.local');
+        if (fs.existsSync(envPath)) {
+            const content = fs.readFileSync(envPath, 'utf-8');
+            const match = content.match(/VITE_GEMINI_API_KEY=(.+)/);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+        }
+    } catch (e) {
+        // ignore
+    }
+    return null;
+}
+
+const API_KEY = getApiKey();
+if (!API_KEY) {
+    console.error("API Key not found. Please set VITE_GEMINI_API_KEY in .env.local or environment.");
+    process.exit(1);
+}
 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`;
 
 https.get(url, (res) => {
