@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I'm Sorry, Vaishnavi 💙</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --rose: #f43f5e;
+      --pink: #fb7185;
+      --lavender: #a78bfa;
+      --soft-white: #fff1f5;
+      --text-dark: #3b1c32;
+      --text-mid: #6d3a54;
+      --card-bg: rgba(255,255,255,0.18);
+      --glow: rgba(244, 63, 94, 0.3);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: #1a0a14;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS / PARTICLES ── */
+    #particles-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── GRADIENT BG ── */
+    .bg-gradient {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(167,139,250,0.25) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(244,63,94,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(251,113,133,0.1) 0%, transparent 70%),
+        linear-gradient(160deg, #200d1e 0%, #12061a 50%, #1e0918 100%);
+    }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* ── ENVELOPE INTRO ── */
+    #envelope-scene {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 24px; animation: fadeInUp 1s ease both;
+    }
+
+    .envelope {
+      width: 220px; height: 150px; position: relative;
+      cursor: pointer; filter: drop-shadow(0 0 30px var(--glow));
+      transition: transform 0.3s ease;
+    }
+    .envelope:hover { transform: scale(1.05); }
+
+    .env-body {
+      position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #f9a8d4, #fda4af);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(244,63,94,0.4);
+    }
+    .env-flap {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 0;
+      border-left: 110px solid transparent;
+      border-right: 110px solid transparent;
+      border-top: 80px solid #fb7185;
+      transform-origin: top center;
+      transition: transform 0.7s ease;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+    }
+    .env-left {
+      position: absolute; bottom: 0; left: 0;
+      border-bottom: 75px solid #f472b6;
+      border-right: 110px solid transparent;
+    }
+    .env-right {
+      position: absolute; bottom: 0; right: 0;
+      border-bottom: 75px solid #ec4899;
+      border-left: 110px solid transparent;
+    }
+    .env-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(to top, #fda4af, #fecdd3);
+      border-radius: 0 0 8px 8px;
+    }
+    .env-heart {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -10%);
+      font-size: 2rem; z-index: 5;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .envelope.open .env-flap { transform: rotateX(180deg); }
+
+    .tap-hint {
+      color: rgba(255,255,255,0.7); font-size: 0.85rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* ── LETTER CARD ── */
+    #letter-card {
+      display: none; opacity: 0;
+      max-width: 680px; width: 100%;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 28px;
+      padding: 48px 44px;
+      box-shadow:
+        0 0 60px rgba(244,63,94,0.15),
+        0 24px 64px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+      text-align: center;
+    }
+    #letter-card.visible {
+      display: block;
+      animation: letterAppear 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    .sorry-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--rose), var(--lavender));
+      color: #fff; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      padding: 6px 20px; border-radius: 50px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(244,63,94,0.4);
+    }
+
+    .big-sorry {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      background: linear-gradient(135deg, #fb7185, #a78bfa, #f43f5e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1; margin-bottom: 8px;
+      filter: drop-shadow(0 0 20px rgba(244,63,94,0.4));
+      animation: shimmer 3s ease-in-out infinite;
+      background-size: 200%;
+    }
+
+    .to-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #fda4af; margin-bottom: 36px;
+      opacity: 0.95;
+    }
+
+    .divider {
+      width: 80px; height: 2px; margin: 0 auto 36px;
+      background: linear-gradient(90deg, transparent, #fb7185, transparent);
+    }
+
+    .letter-body { text-align: left; }
+
+    .letter-body p {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.05rem; line-height: 1.9;
+      margin-bottom: 20px; font-weight: 300;
+    }
+    .letter-body p strong {
+      color: #fda4af; font-weight: 600;
+    }
+
+    .promise-box {
+      background: rgba(244,63,94,0.1);
+      border: 1px solid rgba(244,63,94,0.3);
+      border-radius: 16px; padding: 24px 28px;
+      margin: 32px 0;
+    }
+    .promise-box h3 {
+      color: #fb7185; font-size: 1rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 16px; font-weight: 600;
+    }
+    .promise-item {
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 12px;
+      color: rgba(255,255,255,0.8); font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .promise-item:last-child { margin-bottom: 0; }
+    .promise-icon { font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+
+    .signature {
+      text-align: right; margin-top: 40px;
+    }
+    .signature p { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 4px; }
+    .signature .name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem; color: #fb7185;
+    }
+
+    /* ── FLOATING HEARTS ── */
+    .floating-hearts {
+      position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+    }
+    .heart {
+      position: absolute; font-size: 1.2rem;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    /* ── MUSIC NOTE BUTTON ── */
+    .music-btn {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--rose), var(--lavender));
+      border: none; cursor: pointer; font-size: 1.5rem;
+      box-shadow: 0 4px 24px var(--glow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 100; display: flex; align-items: center; justify-content: center;
+    }
+    .music-btn:hover { transform: scale(1.1); box-shadow: 0 8px 32px var(--glow); }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes letterAppear {
+      from { opacity: 0; transform: scale(0.85) translateY(30px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.08); }
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.4; }
+      100% { opacity: 0; transform: translateY(-100vh) rotate(360deg); }
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0%; }
+      50%       { background-position: 100%; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      #letter-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Floating decorative hearts -->
+  <div class="floating-hearts" id="floatingHearts"></div>
+
+  <div class="wrapper">
+
+    <!-- Envelope intro -->
+    <div id="envelope-scene">
+      <div class="envelope" id="envelope" onclick="openEnvelope()">
+        <div class="env-body"></div>
+        <div class="env-bottom"></div>
+        <div class="env-left"></div>
+        <div class="env-right"></div>
+        <div class="env-flap" id="envFlap"></div>
+        <div class="env-heart">💌</div>
+      </div>
+      <p class="tap-hint">✨ Tap to open ✨</p>
+    </div>
+
+    <!-- Letter -->
+    <div id="letter-card">
+      <div class="sorry-badge">A Message From The Heart</div>
+      <div class="big-sorry">I'm Sorry</div>
+      <div class="to-name">Dear Vaishnavi 🌸</div>
+      <div class="divider"></div>
+
+      <div class="letter-body">
+        <p>
+          I know a simple "sorry" might not be enough for the pain I caused you today. But I want you to know that I
+          <strong>truly, deeply regret</strong> what happened. The way I acted was wrong — completely wrong — and you
+          deserved none of that.
+        </p>
+        <p>
+          You are my <strong>best friend</strong>, the one person who has always been there for me through everything. And
+          today, instead of being there for you, I let my anger get the better of me. That is something I am truly
+          ashamed of.
+        </p>
+        <p>
+          I've thought about it, and I've realised — <strong>I made a big mistake.</strong> No excuse, no justification.
+          Just the honest truth that I was wrong and you were right to feel hurt.
+        </p>
+
+        <div class="promise-box">
+          <h3>💗 My Promises To You</h3>
+          <div class="promise-item">
+            <span class="promise-icon">🌟</span>
+            <span>This will <strong>never happen again</strong>. I promise to handle my anger and never take it out on you.</span>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">🤝</span>
+            <span>I will always <strong>respect you</strong> — your feelings, your space, and your heart.</span>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">💬</span>
+            <span>I will <strong>talk, not shout</strong>. No matter what happens, I'll express myself calmly and kindly.</span>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">💙</span>
+            <span>Our friendship is <strong>the most precious thing</strong> I have. I will never take it for granted again.</span>
+          </div>
+        </div>
+
+        <p>
+          You mean the world to me, Vaishnavi. Not just as a friend — but as someone I genuinely love and care about.
+          I hope you can find it in your heart to <strong>forgive me</strong>. And I hope we can go back to being the
+          best friends we always were. 🌸
+        </p>
+      </div>
+
+      <div class="signature">
+        <p>With all my love and regret,</p>
+        <div class="name">Vedant 💙</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Music note button -->
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Play/Pause music">🎵</button>
+
+  <!-- Hidden audio -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mp3"/>
+  </audio>
+
+  <script>
+    // ── PARTICLES ──
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.r = Math.random() * 2 + 0.5;
+        this.alpha = Math.random() * 0.6 + 0.1;
+        this.speed = Math.random() * 0.3 + 0.1;
+        this.dx = (Math.random() - 0.5) * 0.5;
+        this.dy = -this.speed;
+        this.color = Math.random() > 0.5 ? '#fb7185' : '#a78bfa';
+      }
+      update() {
+        this.x += this.dx; this.y += this.dy;
+        this.alpha -= 0.001;
+        if (this.alpha <= 0 || this.y < 0) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // ── FLOATING HEARTS ──
+    const hearts = ['💗','💖','💕','🌸','✨','💙','🌷'];
+    const container = document.getElementById('floatingHearts');
+
+    function spawnHeart() {
+      const el = document.createElement('span');
+      el.className = 'heart';
+      el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.fontSize = (Math.random() * 1.2 + 0.6) + 'rem';
+      const dur = Math.random() * 8 + 7;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = Math.random() * 3 + 's';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 3) * 1000);
+    }
+
+    setInterval(spawnHeart, 800);
+    for (let i = 0; i < 8; i++) setTimeout(spawnHeart, i * 200);
+
+    // ── ENVELOPE OPEN ──
+    let opened = false;
+    function openEnvelope() {
+      if (opened) return; opened = true;
+      const env = document.getElementById('envelope');
+      const scene = document.getElementById('envelope-scene');
+      const card = document.getElementById('letter-card');
+
+      env.classList.add('open');
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        scene.style.opacity = '0';
+        scene.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          scene.style.display = 'none';
+          card.classList.add('visible');
+          // burst hearts
+          for (let i = 0; i < 20; i++) setTimeout(spawnHeart, i * 100);
+        }, 500);
+      }, 700);
+    }
+
+    // ── MUSIC ──
+    const music = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    let playing = false;
+
+    function toggleMusic() {
+      if (playing) { music.pause(); musicBtn.textContent = '🎵'; playing = false; }
+      else { music.play().catch(()=>{}); musicBtn.textContent = '⏸️'; playing = true; }
+    }
+  </script>
+</body>
+</html>
